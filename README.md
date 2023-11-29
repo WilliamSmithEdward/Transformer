@@ -37,6 +37,17 @@ var myInt2 = myString.ToNullableType<int>(false);
 Console.WriteLine(myInt2); // returns 0
 ```
 
+### Convert from an int to a float
+```csharp
+using Transformer;
+
+var myInt = "1";
+
+var myFloat = myInt.ToNonNullableType<float>();
+
+Console.WriteLine(myFloat);
+```
+
 ### Test if string is parseable to int
 ```csharp
 using Transformer;
