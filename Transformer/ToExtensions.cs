@@ -48,7 +48,7 @@
         /// If <paramref name="returnNullOnConversionError"/> is <c>true</c> and conversion fails, <c>null</c> is returned.
         /// If <paramref name="returnNullOnConversionError"/> is <c>false</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
-        public static T? ToNullableType<T>(this object o, bool returnNullOnConversionError = true) where T : struct
+        public static T? ToNullableType<T>(this object? o, bool returnNullOnConversionError = true) where T : struct
         {
             if (string.IsNullOrEmpty(o?.ToString()?.Trim()))
             {

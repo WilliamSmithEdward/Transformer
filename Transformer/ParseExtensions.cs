@@ -17,7 +17,7 @@
         /// <returns>
         /// <c>true</c> if the value can be parsed to type <typeparamref name="T"/>; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsParseable<T>(this object o, bool allowNullable = false) where T : struct
+        public static bool IsParseable<T>(this object? o, bool allowNullable = false) where T : struct
         {
             if (string.IsNullOrEmpty(o?.ToString()?.Trim()))
             {
