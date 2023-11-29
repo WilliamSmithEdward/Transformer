@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Transformer is a C# library that helps you better interact with and transform data from one type into another.</Description>
+		<PackageReadmeFile>nugetREADME.md</PackageReadmeFile>
+		<RepositoryUrl></RepositoryUrl>
+		<PackageProjectUrl>https://github.com/WilliamSmithEdward/Transformer</PackageProjectUrl>
+		<PackageTags>data;transformation;generic;type;automation</PackageTags>
+		<Deterministic>false</Deterministic>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<PackageVersion>1.0.0.0</PackageVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>Tranformer.png</PackageIcon>
+		<Copyright>William Edward Smith, 2023</Copyright>
+		<Title>Exceleration</Title>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Update="Transformer.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Update="nugetREADME.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
