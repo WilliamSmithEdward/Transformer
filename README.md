@@ -41,7 +41,7 @@ Console.WriteLine(myInt2); // returns 0
 ```csharp
 using Transformer;
 
-var myInt = "1";
+var myInt = 1;
 
 var myFloat = myInt.ToNonNullableType<float>();
 
