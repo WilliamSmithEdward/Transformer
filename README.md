@@ -48,7 +48,7 @@ var myFloat = myInt.ToNonNullableType<float>();
 Console.WriteLine(myFloat);
 ```
 
-### Test if string is parseable to int
+### Test if string is parseable to an int
 ```csharp
 using Transformer;
 
