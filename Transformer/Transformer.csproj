@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -17,7 +17,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>Tranformer.png</PackageIcon>
 		<Copyright>William Edward Smith, 2023</Copyright>
-		<Title>Exceleration</Title>
+		<Title>Transformer</Title>
 	</PropertyGroup>
 
 	<ItemGroup>
