@@ -63,8 +63,8 @@
 
             catch
             {
-                if (returnNullOnConversionError) return null;
-                else return default;
+                if (returnNullOnConversionError) return default;
+                else return default(T);
             }
         }
     }

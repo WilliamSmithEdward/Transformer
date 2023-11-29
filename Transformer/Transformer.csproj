@@ -12,8 +12,8 @@
 		<PackageProjectUrl>https://github.com/WilliamSmithEdward/Transformer</PackageProjectUrl>
 		<PackageTags>data;transformation;generic;type;automation</PackageTags>
 		<Deterministic>false</Deterministic>
-		<AssemblyVersion>1.0.0.1</AssemblyVersion>
-		<PackageVersion>1.0.0.1</PackageVersion>
+		<AssemblyVersion>1.0.0.2</AssemblyVersion>
+		<PackageVersion>1.0.0.2</PackageVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>Transformer.png</PackageIcon>
 		<Copyright>William Edward Smith, 2023</Copyright>
