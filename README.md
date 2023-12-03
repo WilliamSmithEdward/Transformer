@@ -61,3 +61,22 @@ string? myNullString = null;
 Console.WriteLine(myNullString.IsParseable<int>()); // returns false
 Console.WriteLine(myNullString.IsParseable<int>(allowNullable: true)); // returns true
 ```
+
+### Transform one ICollection to another
+```csharp
+var list = new List<string>() { "1", "bob", "apple", "2", "3", "4", "5" };
+
+var transformedList = list.ToNonNullableCollectionType<List<string>, string, List<int>, int>();
+
+foreach (var item in transformedList.TransformationSuccesses)
+{
+    Console.WriteLine(item);
+}
+
+Console.WriteLine();
+
+foreach (var item in transformedList.TransformationFailures)
+{
+    Console.WriteLine(item);
+}
+```
