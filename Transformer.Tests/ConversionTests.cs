@@ -39,6 +39,25 @@ public class ConversionTests
     }
 
     [Fact]
+    public void ToNonNullableType_with_false_carries_the_cause_as_the_inner_exception()
+    {
+        using var culture = new CultureScope("en-US");
+
+        var overflow = Assert.Throws<InvalidCastException>(() => "300".ToNonNullableType<byte>(false));
+        var format = Assert.Throws<InvalidCastException>(() => "abc".ToNonNullableType<int>(false));
+        var date = Assert.Throws<InvalidCastException>(() => "13/1/2023".ToNonNullableType<DateTime>(false));
+        var none = Assert.Throws<InvalidCastException>(() => ((object)null!).ToNonNullableType<int>(false));
+        var cast = Assert.Throws<InvalidCastException>(() => new object().ToNonNullableType<int>(false));
+
+        Assert.Equal("Cannot convert value to type System.Byte.", overflow.Message);
+        Assert.IsType<OverflowException>(overflow.InnerException);
+        Assert.IsType<FormatException>(format.InnerException);
+        Assert.IsType<FormatException>(date.InnerException);
+        Assert.IsType<InvalidCastException>(none.InnerException);
+        Assert.IsType<InvalidCastException>(cast.InnerException);
+    }
+
+    [Fact]
     public void A_value_outside_the_range_of_the_type_does_not_convert()
     {
         Assert.Equal((byte)0, "300".ToNonNullableType<byte>());

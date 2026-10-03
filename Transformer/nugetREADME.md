@@ -39,7 +39,8 @@ try
 }
 catch (InvalidCastException e)
 {
-    Console.WriteLine(e.Message);  // Cannot convert value to type System.Int32.
+    Console.WriteLine(e.Message);                         // Cannot convert value to type System.Int32.
+    Console.WriteLine(e.InnerException?.GetType().Name);  // FormatException
 }
 ```
 
@@ -138,7 +139,7 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 - Text converts to `bool` only as "true" or "false", in any case. "1" and "yes" do not convert; the number 1 converts to `true`.
 - `null` and `DBNull.Value` do not convert.
 - Only the types `Convert.ChangeType` knows convert: the numeric types, `bool`, `char` and `DateTime`. Other value types, such as enums, `Guid`, `TimeSpan`, `DateTimeOffset` and `DateOnly`, never convert. See "Known problems" below.
-- `ToNonNullableType<T>()` returns `default(T)` (0, `false`, `DateTime.MinValue`) when the value does not convert. `ToNonNullableType<T>(false)` throws `InvalidCastException` instead.
+- `ToNonNullableType<T>()` returns `default(T)` (0, `false`, `DateTime.MinValue`) when the value does not convert. `ToNonNullableType<T>(false)` throws `InvalidCastException` instead, whose `InnerException` is the cause: a `FormatException` for text that is not a number of that type, an `OverflowException` for a value out of its range, or an `InvalidCastException` for `null` or a type that does not convert.
 - `ToNullableType<T>()` returns `null` for `null`, `DBNull.Value`, an empty string and a string of spaces, whatever its argument. For any other value that does not convert it returns `null`, or `default(T)` with `ToNullableType<T>(false)`.
 - `IsParseable<T>()` returns whether the conversion would succeed. It returns `false` for `null`, `DBNull.Value`, an empty string and a string of spaces, and `true` for them with `allowNullable: true`. Because a space counts as blank, `" ".IsParseable<char>()` is `false` and `" ".ToNullableType<char>()` is `null`, while `" ".ToNonNullableType<char>()` returns the space.
 
@@ -164,7 +165,6 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 - Enums, `Guid`, `TimeSpan`, `DateTimeOffset`, `DateOnly` and other value types that `Convert.ChangeType` does not know never convert: `"Green".ToNonNullableType<Color>()` returns the enum's default, `IsParseable<Color>()` is always `false`, and a collection of names all goes to `TransformationFailures`.
 - There is no way to choose the culture, so text written in a fixed format, such as "1.5" read from a file, gives 15 on a machine set to German.
-- The `InvalidCastException` from `ToNonNullableType<T>(false)` does not carry the exception that caused it, so a value that is out of range cannot be told from one that is not a number.
 - `IEnumerableToDataTable` reads every public property of `T`, so:
   - a type with an indexer throws `TargetParameterCountException`, and `string` has one, so a list of strings cannot be converted;
   - a property with no getter throws `ArgumentException`, and a property whose getter is private is read anyway;

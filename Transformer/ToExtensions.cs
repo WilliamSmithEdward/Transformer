@@ -24,13 +24,15 @@ namespace Transformer
         /// If <paramref name="returnDefaultOnConversionError"/> is <c>true</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
         /// <exception cref="InvalidCastException">
-        /// Thrown when <paramref name="returnDefaultOnConversionError"/> is <c>false</c> and conversion fails.
+        /// Thrown when <paramref name="returnDefaultOnConversionError"/> is <c>false</c> and conversion fails. Its
+        /// <see cref="Exception.InnerException"/> is the cause, such as a <see cref="FormatException"/> for text that is
+        /// not a number or an <see cref="OverflowException"/> for a value out of range.
         /// </exception>
         public static T ToNonNullableType<T>(this object o, bool returnDefaultOnConversionError = true) where T : struct
         {
             if (Conversion.TryConvert(o, null, out T value)) return value;
             if (returnDefaultOnConversionError) return default;
-            throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.");
+            throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.", Conversion.Failure<T>(o, null));
         }
 
         /// <summary>
