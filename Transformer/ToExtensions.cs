@@ -118,14 +118,16 @@ namespace Transformer
         /// <param name="list">The <see cref="IEnumerable{T}"/> to convert to a <see cref="DataTable"/>.</param>
         /// <returns>
         /// A <see cref="DataTable"/> named after the full name of <typeparamref name="T"/>, with one column for each public
-        /// property of <typeparamref name="T"/> (of the property's type, or its underlying type for a <see cref="Nullable{T}"/>
-        /// property) and one row for each element.
+        /// instance property of <typeparamref name="T"/> that has a public getter and is not an indexer (of the property's
+        /// type, or its underlying type for a <see cref="Nullable{T}"/> property), and one row for each element. A property
+        /// hidden with <c>new</c> gives one column, from the most derived type. A <c>null</c> element gives a row of
+        /// <see cref="DBNull.Value"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> is null.</exception>
         public static DataTable IEnumerableToDataTable<T>(this IEnumerable<T> list)
         {
-            Type type = typeof(T);
-            var properties = type.GetProperties();
+            ArgumentNullException.ThrowIfNull(list);
+            PropertyInfo[] properties = ColumnProperties(typeof(T));
 
             var dataTable = new DataTable
             {
@@ -139,16 +141,44 @@ namespace Transformer
 
             foreach (T entity in list)
             {
-                object?[] values = new object[properties.Length];
-                for (int i = 0; i < properties.Length; i++)
+                // A null element leaves every value null, which the row stores as DBNull.
+                object?[] values = new object?[properties.Length];
+                if (entity is not null)
                 {
-                    values[i] = properties[i].GetValue(entity);
+                    for (int i = 0; i < properties.Length; i++)
+                    {
+                        values[i] = properties[i].GetValue(entity);
+                    }
                 }
 
                 dataTable.Rows.Add(values);
             }
 
             return dataTable;
+        }
+
+        /// <summary>
+        /// The properties of <paramref name="type"/> that become columns: public, not static, with a public getter and no
+        /// index parameters, one per name. Where <c>new</c> hides a base type's property, the most derived one is kept, in
+        /// the place the name first appears.
+        /// </summary>
+        private static PropertyInfo[] ColumnProperties(Type type) =>
+            type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetIndexParameters().Length == 0 && p.GetGetMethod() is not null)
+                .GroupBy(p => p.Name)
+                .Select(g => g.OrderByDescending(p => Depth(p.DeclaringType)).First())
+                .ToArray();
+
+        /// <summary>How many base types <paramref name="type"/> has.</summary>
+        private static int Depth(Type? type)
+        {
+            int depth = 0;
+            for (Type? t = type?.BaseType; t is not null; t = t.BaseType)
+            {
+                depth++;
+            }
+
+            return depth;
         }
 
         /// <summary>
