@@ -49,6 +49,25 @@ namespace Transformer
         }
 
         /// <summary>
+        /// Why <paramref name="value"/> does not convert to <typeparamref name="T"/>: the exception
+        /// <see cref="Convert.ChangeType(object, Type, IFormatProvider)"/> throws for it. Called only once
+        /// <see cref="TryConvert{T}"/> has failed, to give a caller's exception its cause.
+        /// </summary>
+        /// <returns>The exception, or <c>null</c> if the value converts after all.</returns>
+        internal static Exception? Failure<T>(object? value, IFormatProvider? provider) where T : struct
+        {
+            try
+            {
+                Convert.ChangeType(value, typeof(T), provider);
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+
+        /// <summary>
         /// Parses text for the types <see cref="Convert"/> reads from a string, with the styles it uses for each.
         /// </summary>
         /// <returns><c>true</c> if the type is one of them, with <paramref name="converted"/> saying whether the text parsed.</returns>
