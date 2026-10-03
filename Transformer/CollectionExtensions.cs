@@ -35,16 +35,18 @@
 
             foreach (var item in collection)
             {
-                if (item.IsParseable<TNewType>() && item is not null)
+                if (item is null)
                 {
-                    successes.Add(item.ToNonNullableType<TNewType>());
+                    continue;
+                }
+
+                if (!Conversion.IsBlank(item) && Conversion.TryConvert(item, null, out TNewType value))
+                {
+                    successes.Add(value);
                 }
                 else
                 {
-                    if (item is not null)
-                    {
-                        failures.Add(item);
-                    }
+                    failures.Add(item);
                 }
             }
 

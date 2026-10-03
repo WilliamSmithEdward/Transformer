@@ -26,7 +26,8 @@ does with what it is given:
 
 - **Conversions.** `ToNonNullableType`, `ToNullableType`, `IsParseable`
   and `ToNonNullableCollectionType` convert the values the caller passes
-  with `Convert.ChangeType`, so the parsing of text is .NET's own.
+  as `Convert.ChangeType` does, reading text with each type's own
+  `TryParse`, so the parsing of text is .NET's own.
 - **Reflection.** `IEnumerableToDataTable` reads the public properties of
   the caller's element type through reflection, which runs each property's
   getter once per element.
