@@ -27,8 +27,9 @@ namespace Transformer
         /// </returns>
         /// <exception cref="InvalidCastException">
         /// Thrown when <paramref name="returnDefaultOnConversionError"/> is <c>false</c> and conversion fails. Its
-        /// <see cref="Exception.InnerException"/> is the cause, such as a <see cref="FormatException"/> for text that is
-        /// not a number or an <see cref="OverflowException"/> for a value out of range.
+        /// <see cref="Exception.InnerException"/> is the cause, such as a <see cref="FormatException"/> for text that does
+        /// not parse as <typeparamref name="T"/>, an <see cref="OverflowException"/> for a value out of range, or an
+        /// <see cref="ArgumentException"/> for a name an enum does not have.
         /// </exception>
         public static T ToNonNullableType<T>(this object o, bool returnDefaultOnConversionError = true) where T : struct
             => o.ToNonNullableType<T>(null, returnDefaultOnConversionError);
