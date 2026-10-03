@@ -6,7 +6,7 @@ Transformer is a set of extension methods for .NET that convert values from one 
 dotnet add package WilliamSmithE.Transformer
 ```
 
-Everything is in the `Transformer` namespace. The package targets net7.0 and has no dependencies.
+Everything is in the `Transformer` namespace. The package targets net8.0, net9.0 and net10.0 and has no dependencies.
 
 ---
 
