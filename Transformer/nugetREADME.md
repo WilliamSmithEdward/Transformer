@@ -173,8 +173,9 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 ## DataTables
 
-- `IEnumerableToDataTable<T>()` makes one column for each public property of `T`, in the order reflection returns them, which is in practice the order they are declared. The column is named after the property and has its type, or the underlying type for a `Nullable<>` property, whose `null` becomes `DBNull.Value`. Each element becomes one row.
-- The columns come from `T`, the element type the list is declared with, not from the type of each element. The table is named after `T`'s full name.
+- `IEnumerableToDataTable<T>()` makes one column for each public instance property of `T` that has a public getter, in the order reflection returns them, which is in practice the order they are declared. Static properties, indexers and properties without a public getter are left out, and a property hidden with `new` gives one column, from the most derived type. The column is named after the property and has its type, or the underlying type for a `Nullable<>` property, whose `null` becomes `DBNull.Value`.
+- Each element becomes one row; a `null` element becomes a row of `DBNull.Value`. A `null` list throws `ArgumentNullException`.
+- The columns come from `T`, the element type the list is declared with, not from the type of each element. The table is named after `T`'s full name. A list of strings gives one column, `Length`, and a list of numbers gives none, because those are the types' public properties.
 - `ToConsoleString()` writes the table as text: a header row of column names and one row per data row, each column as wide as its longest value, values written with `ToString()` in the current culture. A value with a line break in it breaks the layout. A `null` table throws `ArgumentNullException`.
 
 ## Rounding and text
@@ -186,12 +187,6 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 ## Known problems in 1.0.0.5
 
-- `IEnumerableToDataTable` reads every public property of `T`, so:
-  - a type with an indexer throws `TargetParameterCountException`, and `string` has one, so a list of strings cannot be converted;
-  - a property with no getter throws `ArgumentException`, and a property whose getter is private is read anyway;
-  - static properties become columns, with the same value in every row;
-  - a property hidden with `new` throws `DuplicateNameException`, because both properties are read.
-- `IEnumerableToDataTable` throws `NullReferenceException` for a `null` list, where the XML docs promise `ArgumentNullException`, and `TargetException` for a `null` element.
 - `ToTitleCase` lower-cases in the current culture, so under Turkish (tr-TR) "TITLE" gives "Title" spelled with a dotless i (U+0131). A `null` string throws `NullReferenceException`, where the XML docs promise `ArgumentNullException`.
 
 ## Attributions

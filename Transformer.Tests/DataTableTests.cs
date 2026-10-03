@@ -39,6 +39,105 @@ public class DataTableTests
         Assert.Empty(items.IEnumerableToDataTable().Columns);
     }
 
+    private sealed class WithIndexer
+    {
+        public int A { get; set; } = 1;
+
+        public int this[int i] => i;
+    }
+
+    private sealed class WithStatic
+    {
+        public static int Shared { get; set; } = 7;
+
+        public int A { get; set; } = 1;
+    }
+
+    private sealed class WithoutPublicGetters
+    {
+        public int A { get; set; } = 1;
+
+        public int WriteOnly { set { } }
+
+        public int PrivateGetter { private get; set; } = 5;
+    }
+
+    private class Base
+    {
+        public int A { get; set; } = 1;
+    }
+
+    private sealed class Derived : Base
+    {
+        public new string A { get; set; } = "x";
+
+        public int B { get; set; } = 2;
+    }
+
+    private static string[] Columns(DataTable table) => table.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToArray();
+
+    [Fact]
+    public void A_list_of_strings_converts()
+    {
+        DataTable table = new List<string> { "a", "bb" }.IEnumerableToDataTable();
+
+        Assert.Equal(new[] { "Length" }, Columns(table));
+        Assert.Equal(new object[] { 1, 2 }, table.Rows.Cast<DataRow>().Select(r => r["Length"]));
+    }
+
+    [Fact]
+    public void An_indexer_is_not_a_column()
+    {
+        DataTable table = new[] { new WithIndexer() }.IEnumerableToDataTable();
+
+        Assert.Equal(new[] { "A" }, Columns(table));
+    }
+
+    [Fact]
+    public void A_static_property_is_not_a_column()
+    {
+        DataTable table = new[] { new WithStatic() }.IEnumerableToDataTable();
+
+        Assert.Equal(new[] { "A" }, Columns(table));
+    }
+
+    [Fact]
+    public void A_property_without_a_public_getter_is_not_a_column()
+    {
+        DataTable table = new[] { new WithoutPublicGetters() }.IEnumerableToDataTable();
+
+        Assert.Equal(new[] { "A" }, Columns(table));
+    }
+
+    [Fact]
+    public void A_property_hidden_with_new_gives_one_column_from_the_derived_type()
+    {
+        DataTable table = new[] { new Derived() }.IEnumerableToDataTable();
+
+        Assert.Equal(new[] { "A", "B" }, Columns(table));
+        Assert.Equal(typeof(string), table.Columns["A"]!.DataType);
+        Assert.Equal("x", table.Rows[0]["A"]);
+    }
+
+    [Fact]
+    public void A_null_element_becomes_a_row_of_DBNull()
+    {
+        var people = new List<Person?> { new() { Name = "Ann", Age = 31 }, null };
+
+        DataTable table = people.IEnumerableToDataTable();
+
+        Assert.Equal(2, table.Rows.Count);
+        Assert.Equal("Ann", table.Rows[0]["Name"]);
+        Assert.All(table.Rows[1].ItemArray, value => Assert.Equal(DBNull.Value, value));
+    }
+
+    [Fact]
+    public void A_null_list_throws_ArgumentNullException()
+    {
+        var e = Assert.Throws<ArgumentNullException>(() => ((IEnumerable<Person>)null!).IEnumerableToDataTable());
+        Assert.Equal("list", e.ParamName);
+    }
+
     [Fact]
     public void ToConsoleString_prints_the_README_table()
     {
