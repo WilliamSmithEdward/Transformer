@@ -27,10 +27,14 @@ does with what it is given:
 - **Conversions.** `ToNonNullableType`, `ToNullableType`, `IsParseable`
   and `ToNonNullableCollectionType` convert the values the caller passes
   as `Convert.ChangeType` does, reading text with each type's own
-  `TryParse`, so the parsing of text is .NET's own.
+  `TryParse`, and enums with `Enum.TryParse`, so the parsing of text is
+  .NET's own.
 - **Reflection.** `IEnumerableToDataTable` reads the public properties of
   the caller's element type through reflection, which runs each property's
-  getter once per element.
+  getter once per element. To convert text to a value type `Convert` does
+  not know, such as `Guid`, the conversions look up that type's public
+  static `TryParse(string, IFormatProvider, out T)` and call it; that is
+  the target type the caller names, never one taken from the data.
 - **Text.** `ToConsoleString`, `ToTitleCase` and `Round` build their result
   in memory and return it.
 

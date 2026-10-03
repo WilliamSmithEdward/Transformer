@@ -1,11 +1,14 @@
 using System.Globalization;
+using System.Reflection;
 
 namespace Transformer
 {
     /// <summary>
-    /// The conversion every public method shares. It gives the same result as
-    /// <see cref="Convert.ChangeType(object, Type, IFormatProvider)"/>, but reads text with the target type's
+    /// The conversion every public method shares. For the types <see cref="Convert"/> knows it gives the same result
+    /// as <see cref="Convert.ChangeType(object, Type, IFormatProvider)"/>, but reads text with the target type's
     /// <c>TryParse</c>, using the styles <see cref="Convert"/> uses, so text that does not convert costs no exception.
+    /// It also converts to an enum, from a name or a whole number, and to any other value type with a public static
+    /// <c>TryParse(string, IFormatProvider, out T)</c>, such as <see cref="Guid"/> or <see cref="TimeSpan"/>, from text.
     /// </summary>
     internal static class Conversion
     {
@@ -30,9 +33,28 @@ namespace Transformer
                 return false;
             }
 
-            if (value is string text && TryParse(text, provider, out bool converted, out result))
+            if (value is T same)
             {
-                return converted;
+                result = same;
+                return true;
+            }
+
+            if (typeof(T).IsEnum)
+            {
+                return TryEnum(value, out result);
+            }
+
+            if (value is string text)
+            {
+                if (TryParse(text, provider, out bool converted, out result))
+                {
+                    return converted;
+                }
+
+                if (Parser<T>.TryParse is { } parse)
+                {
+                    return parse(text, provider, out result);
+                }
             }
 
             try
@@ -49,8 +71,9 @@ namespace Transformer
         }
 
         /// <summary>
-        /// Why <paramref name="value"/> does not convert to <typeparamref name="T"/>: the exception
-        /// <see cref="Convert.ChangeType(object, Type, IFormatProvider)"/> throws for it. Called only once
+        /// Why <paramref name="value"/> does not convert to <typeparamref name="T"/>: the exception the throwing form of
+        /// the same conversion raises for it (<see cref="Convert.ChangeType(object, Type, IFormatProvider)"/>,
+        /// <see cref="Enum.Parse(Type, string, bool)"/>, or the type's own <c>Parse</c>). Called only once
         /// <see cref="TryConvert{T}"/> has failed, to give a caller's exception its cause.
         /// </summary>
         /// <returns>The exception, or <c>null</c> if the value converts after all.</returns>
@@ -58,12 +81,100 @@ namespace Transformer
         {
             try
             {
-                Convert.ChangeType(value, typeof(T), provider);
+                if (typeof(T).IsEnum && value is string name)
+                {
+                    Enum.Parse(typeof(T), name, ignoreCase: true);
+                }
+                else if (typeof(T).IsEnum && value is not null && IsWholeNumber(value))
+                {
+                    Convert.ChangeType(value, Enum.GetUnderlyingType(typeof(T)), CultureInfo.InvariantCulture);
+                }
+                else if (!typeof(T).IsEnum && value is string text && Parser<T>.Parse is { } parse)
+                {
+                    parse(text, provider);
+                }
+                else
+                {
+                    Convert.ChangeType(value, typeof(T), provider);
+                }
+
                 return null;
             }
             catch (Exception e)
             {
                 return e;
+            }
+        }
+
+        /// <summary>
+        /// Converts to an enum: text as a name, in any case, or a whole number, as <see cref="Enum.TryParse(Type, string, bool, out object)"/>
+        /// reads it; a whole number of an integer type that fits the enum's underlying type. Like any enum, it takes a number
+        /// it has no name for. A value of another enum type does not convert.
+        /// </summary>
+        private static bool TryEnum<T>(object value, out T result) where T : struct
+        {
+            result = default;
+            if (value is string text)
+            {
+                if (!Enum.TryParse(typeof(T), text, ignoreCase: true, out object? parsed) || parsed is null)
+                {
+                    return false;
+                }
+
+                result = (T)parsed;
+                return true;
+            }
+
+            if (!IsWholeNumber(value))
+            {
+                return false;
+            }
+
+            try
+            {
+                // Checked against the underlying type, so a number too large for the enum does not wrap around.
+                object number = Convert.ChangeType(value, Enum.GetUnderlyingType(typeof(T)), CultureInfo.InvariantCulture);
+                result = (T)Enum.ToObject(typeof(T), number);
+                return true;
+            }
+            catch (OverflowException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>Whether the value is of an integer type, and not an enum.</summary>
+        private static bool IsWholeNumber(object value) =>
+            !value.GetType().IsEnum && Type.GetTypeCode(value.GetType()) is TypeCode.SByte or TypeCode.Byte
+                or TypeCode.Int16 or TypeCode.UInt16 or TypeCode.Int32 or TypeCode.UInt32 or TypeCode.Int64 or TypeCode.UInt64;
+
+        /// <summary>
+        /// The public static <c>TryParse(string, IFormatProvider, out T)</c> and <c>Parse(string, IFormatProvider)</c> of a
+        /// value type <see cref="Convert"/> does not know, such as <see cref="Guid"/>, <see cref="TimeSpan"/>,
+        /// <see cref="DateTimeOffset"/>, <see cref="DateOnly"/>, <see cref="TimeOnly"/> or <see cref="Int128"/>; <c>null</c>
+        /// when the type has none. Looked up once per type.
+        /// </summary>
+        private static class Parser<T> where T : struct
+        {
+            internal delegate bool TryParseText(string text, IFormatProvider? provider, out T result);
+
+            internal delegate T ParseText(string text, IFormatProvider? provider);
+
+            internal static readonly TryParseText? TryParse =
+                Find<TryParseText>("TryParse", typeof(string), typeof(IFormatProvider), typeof(T).MakeByRefType());
+
+            internal static readonly ParseText? Parse = Find<ParseText>("Parse", typeof(string), typeof(IFormatProvider));
+
+            private static TDelegate? Find<TDelegate>(string name, params Type[] parameters) where TDelegate : Delegate
+            {
+                // The types Convert reads from a string keep Convert's own styles.
+                if (Type.GetTypeCode(typeof(T)) != TypeCode.Object)
+                {
+                    return null;
+                }
+
+                MethodInfo? method = typeof(T).GetMethod(name, BindingFlags.Public | BindingFlags.Static, null, parameters, null);
+                return method is null ? null : (TDelegate?)Delegate.CreateDelegate(typeof(TDelegate), method, throwOnBindFailure: false);
             }
         }
 

@@ -15,8 +15,10 @@
         /// only white space) counts as parseable. If <c>false</c>, a blank value is not parseable.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value converts to type <typeparamref name="T"/> as <see cref="Convert.ChangeType(object, Type)"/>
-        /// converts it, reading text in the current culture; otherwise, <c>false</c>.
+        /// <c>true</c> if the value converts to type <typeparamref name="T"/>, with text read in the current culture: as
+        /// <see cref="Convert.ChangeType(object, Type)"/> converts it for the types it knows, an enum from its name or a whole
+        /// number, and another value type from text through its own <c>TryParse(string, IFormatProvider, out T)</c>; otherwise,
+        /// <c>false</c>.
         /// </returns>
         public static bool IsParseable<T>(this object? o, bool allowNullable = false) where T : struct
         {
