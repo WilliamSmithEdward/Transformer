@@ -46,12 +46,15 @@ its own; report it as an issue.
 
 ### Converting text you did not create
 
-Text is read in the current culture, so the same string can give a
-different number or date on a machine set to another language: "1.5" is
-15 under German settings. Check what a conversion returned before you rely
-on it, and do not let a value that did not convert stand in for a real one
-where it matters: `ToNonNullableType` returns 0 or another default, unless
-you pass `false` to get an exception.
+Text is read in the current culture unless you pass a format provider,
+so the same string can give a different number or date on a machine set
+to another language: "1.5" is 15 under German settings. For text in a
+fixed format, such as a file or another program's output, use the
+overloads that take an `IFormatProvider` and pass
+`CultureInfo.InvariantCulture`. Check what a conversion returned before
+you rely on it, and do not let a value that did not convert stand in for a
+real one where it matters: `ToNonNullableType` returns 0 or another
+default, unless you pass `false` to get an exception.
 
 ### Large inputs
 

@@ -31,10 +31,36 @@ namespace Transformer
         /// not a number or an <see cref="OverflowException"/> for a value out of range.
         /// </exception>
         public static T ToNonNullableType<T>(this object o, bool returnDefaultOnConversionError = true) where T : struct
+            => o.ToNonNullableType<T>(null, returnDefaultOnConversionError);
+
+        /// <summary>
+        /// Converts the specified object to the specified non-nullable value type <typeparamref name="T"/>, reading text with
+        /// the given format provider instead of the current culture.
+        /// </summary>
+        /// <typeparam name="T">The target non-nullable value type.</typeparam>
+        /// <param name="o">The object to be converted.</param>
+        /// <param name="provider">
+        /// The culture or format provider that reads text, such as <see cref="CultureInfo.InvariantCulture"/> for text written
+        /// in a fixed format; <c>null</c> for the current culture.
+        /// </param>
+        /// <param name="returnDefaultOnConversionError">
+        /// If <c>true</c>, returns the default value of type <typeparamref name="T"/> on conversion error.
+        /// If <c>false</c>, throws an <see cref="InvalidCastException"/> on conversion error.
+        /// </param>
+        /// <returns>
+        /// The value converted as <see cref="ToNonNullableType{T}(object, bool)"/> converts it, with text read by
+        /// <paramref name="provider"/>.
+        /// If <paramref name="returnDefaultOnConversionError"/> is <c>true</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
+        /// </returns>
+        /// <exception cref="InvalidCastException">
+        /// Thrown when <paramref name="returnDefaultOnConversionError"/> is <c>false</c> and conversion fails. Its
+        /// <see cref="Exception.InnerException"/> is the cause.
+        /// </exception>
+        public static T ToNonNullableType<T>(this object? o, IFormatProvider? provider, bool returnDefaultOnConversionError = true) where T : struct
         {
-            if (Conversion.TryConvert(o, null, out T value)) return value;
+            if (Conversion.TryConvert(o, provider, out T value)) return value;
             if (returnDefaultOnConversionError) return default;
-            throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.", Conversion.Failure<T>(o, null));
+            throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.", Conversion.Failure<T>(o, provider));
         }
 
         /// <summary>
@@ -56,9 +82,31 @@ namespace Transformer
         /// If <paramref name="returnNullOnConversionError"/> is <c>false</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
         public static T? ToNullableType<T>(this object? o, bool returnNullOnConversionError = true) where T : struct
+            => o.ToNullableType<T>(null, returnNullOnConversionError);
+
+        /// <summary>
+        /// Converts the specified object to the specified nullable value type <typeparamref name="T"/>, reading text with the
+        /// given format provider instead of the current culture.
+        /// </summary>
+        /// <typeparam name="T">The target nullable value type.</typeparam>
+        /// <param name="o">The object to be converted.</param>
+        /// <param name="provider">
+        /// The culture or format provider that reads text, such as <see cref="CultureInfo.InvariantCulture"/> for text written
+        /// in a fixed format; <c>null</c> for the current culture.
+        /// </param>
+        /// <param name="returnNullOnConversionError">
+        /// If <c>true</c>, returns <c>null</c> on conversion error.
+        /// If <c>false</c>, returns the default value of type <typeparamref name="T"/> on conversion error.
+        /// </param>
+        /// <returns>
+        /// The value converted as <see cref="ToNullableType{T}(object, bool)"/> converts it, with text read by
+        /// <paramref name="provider"/>: <c>null</c> for a blank value whatever <paramref name="returnNullOnConversionError"/>
+        /// is, and <c>null</c> or the default value of type <typeparamref name="T"/>, as it says, when conversion fails.
+        /// </returns>
+        public static T? ToNullableType<T>(this object? o, IFormatProvider? provider, bool returnNullOnConversionError = true) where T : struct
         {
             if (Conversion.IsBlank(o)) return null;
-            if (Conversion.TryConvert(o, null, out T value)) return value;
+            if (Conversion.TryConvert(o, provider, out T value)) return value;
             if (returnNullOnConversionError) return null;
             return default(T);
         }

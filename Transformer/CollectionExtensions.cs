@@ -25,7 +25,35 @@
         /// element is in neither list.
         /// </remarks>
         /// <seealso cref="CollectionTransformResult{TCollectionNew, TNewType}"/>
-        public static CollectionTransformResult<TCollectionNew, TNewType> ToNonNullableCollectionType<TCollectionCurrent, TCurrentType, TCollectionNew, TNewType>(this TCollectionCurrent collection) 
+        public static CollectionTransformResult<TCollectionNew, TNewType> ToNonNullableCollectionType<TCollectionCurrent, TCurrentType, TCollectionNew, TNewType>(this TCollectionCurrent collection)
+            where TCollectionCurrent : ICollection<TCurrentType>
+            where TCollectionNew : ICollection<TNewType>, new()
+            where TNewType : struct
+            => collection.ToNonNullableCollectionType<TCollectionCurrent, TCurrentType, TCollectionNew, TNewType>(null);
+
+        /// <summary>
+        /// Transforms elements of the current collection to a new non-nullable collection type, reading text with the given
+        /// format provider instead of the current culture.
+        /// </summary>
+        /// <typeparam name="TCollectionCurrent">The type of the current collection.</typeparam>
+        /// <typeparam name="TCurrentType">The type of elements in the current collection.</typeparam>
+        /// <typeparam name="TCollectionNew">The type of the new non-nullable collection.</typeparam>
+        /// <typeparam name="TNewType">The type of elements in the new non-nullable collection.</typeparam>
+        /// <param name="collection">The current collection to transform.</param>
+        /// <param name="provider">
+        /// The culture or format provider that reads text, such as <see cref="System.Globalization.CultureInfo.InvariantCulture"/>
+        /// for text written in a fixed format; <c>null</c> for the current culture.
+        /// </param>
+        /// <returns>
+        /// A <see cref="CollectionTransformResult{TCollectionNew, TNewType}"/> containing the successfully
+        /// transformed elements and a list of objects representing transformation failures.
+        /// </returns>
+        /// <remarks>
+        /// The elements are split as <see cref="ToNonNullableCollectionType{TCollectionCurrent, TCurrentType, TCollectionNew, TNewType}(TCollectionCurrent)"/>
+        /// splits them, with text read by <paramref name="provider"/>.
+        /// </remarks>
+        /// <seealso cref="CollectionTransformResult{TCollectionNew, TNewType}"/>
+        public static CollectionTransformResult<TCollectionNew, TNewType> ToNonNullableCollectionType<TCollectionCurrent, TCurrentType, TCollectionNew, TNewType>(this TCollectionCurrent collection, IFormatProvider? provider)
             where TCollectionCurrent : ICollection<TCurrentType>
             where TCollectionNew : ICollection<TNewType>, new()
             where TNewType : struct
@@ -40,7 +68,7 @@
                     continue;
                 }
 
-                if (!Conversion.IsBlank(item) && Conversion.TryConvert(item, null, out TNewType value))
+                if (!Conversion.IsBlank(item) && Conversion.TryConvert(item, provider, out TNewType value))
                 {
                     successes.Add(value);
                 }
