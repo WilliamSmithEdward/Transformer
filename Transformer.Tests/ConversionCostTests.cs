@@ -42,6 +42,8 @@ public class ConversionCostTests
         bool parseable = "300".IsParseable<byte>();
         DateTime date = "not a date".ToNonNullableType<DateTime>();
         var result = bad.ToNonNullableCollectionType<List<string>, string, List<int>, int>();
+        bool name = "Purple".IsParseable<Color>();
+        Guid guid = "not a guid".ToNonNullableType<Guid>();
 
         Assert.Equal(0, counter.Thrown);
         Assert.Equal(0, value);
@@ -49,6 +51,8 @@ public class ConversionCostTests
         Assert.False(parseable);
         Assert.Equal(default, date);
         Assert.Equal(1000, result.TransformationFailures.Count);
+        Assert.False(name);
+        Assert.Equal(Guid.Empty, guid);
     }
 
     [Fact]
@@ -64,13 +68,18 @@ public class ConversionCostTests
 
     public static TheoryData<string> Cultures => new() { "", "en-US", "de-DE", "fr-FR", "tr-TR", "ja-JP" };
 
+    // A no-break space before a digit, and the Arabic-Indic digits one and two,
+    // built from their code points so this file stays ASCII.
+    private static readonly string NoBreakSpaceOne = (char)0x00A0 + "1";
+    private static readonly string ArabicIndicTwelve = new(new[] { (char)0x0661, (char)0x0662 });
+
     private static readonly string[] Texts =
     {
         "0", "1", "-1", "123", " 12 ", "+7", "1.5", "1,5", "1,000", "1.000,5", "1e5", "-1e-3", "300", "-300",
         "255", "256", "65536", "2147483648", "9223372036854775808", "18446744073709551616", "NaN", "Infinity",
         "-Infinity", "true", "False", "TRUE", " true ", "yes", "x", "ab", "", " ", "\t", "0x10", "(5)", "5-",
-        "$5", "1 000", " " + "1", "1/2/2023", "13/1/2023", "2023-01-02", "2023-01-02T03:04:05",
-        "2023-01-02T03:04:05Z", "12:30", "Jan 2 2023", "1.5.2023", "abc123", "١٢",
+        "$5", "1 000", NoBreakSpaceOne, "1/2/2023", "13/1/2023", "2023-01-02", "2023-01-02T03:04:05",
+        "2023-01-02T03:04:05Z", "12:30", "Jan 2 2023", "1.5.2023", "abc123", ArabicIndicTwelve,
     };
 
     [Theory]

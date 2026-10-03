@@ -27,6 +27,13 @@ public sealed class CultureScope : IDisposable
     }
 }
 
+public enum Color
+{
+    Red,
+    Green,
+    Blue,
+}
+
 public class Person
 {
     public string Name { get; set; } = "";

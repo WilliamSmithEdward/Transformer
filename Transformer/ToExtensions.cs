@@ -20,7 +20,9 @@ namespace Transformer
         /// If <c>false</c>, throws an <see cref="InvalidCastException"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The value converted as <see cref="Convert.ChangeType(object, Type)"/> converts it, reading text in the current culture.
+        /// The converted value, with text read in the current culture: as <see cref="Convert.ChangeType(object, Type)"/> converts
+        /// it for the types it knows, an enum from its name or a whole number, and another value type from text through its own
+        /// <c>TryParse(string, IFormatProvider, out T)</c>.
         /// If <paramref name="returnDefaultOnConversionError"/> is <c>true</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
         /// <exception cref="InvalidCastException">
@@ -45,7 +47,9 @@ namespace Transformer
         /// If <c>false</c>, returns the default value of type <typeparamref name="T"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The value converted as <see cref="Convert.ChangeType(object, Type)"/> converts it, reading text in the current culture.
+        /// The converted value, with text read in the current culture: as <see cref="Convert.ChangeType(object, Type)"/> converts
+        /// it for the types it knows, an enum from its name or a whole number, and another value type from text through its own
+        /// <c>TryParse(string, IFormatProvider, out T)</c>.
         /// <c>null</c> for a blank value (<c>null</c>, <see cref="DBNull.Value"/>, or a value whose string form is empty or
         /// only white space), whatever <paramref name="returnNullOnConversionError"/> is.
         /// If <paramref name="returnNullOnConversionError"/> is <c>true</c> and conversion fails, <c>null</c> is returned.
