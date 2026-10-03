@@ -15,27 +15,17 @@
         /// only white space) counts as parseable. If <c>false</c>, a blank value is not parseable.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="Convert.ChangeType(object, Type)"/> converts the value to type <typeparamref name="T"/>,
-        /// which reads text in the current culture; otherwise, <c>false</c>.
+        /// <c>true</c> if the value converts to type <typeparamref name="T"/> as <see cref="Convert.ChangeType(object, Type)"/>
+        /// converts it, reading text in the current culture; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsParseable<T>(this object? o, bool allowNullable = false) where T : struct
         {
-            if (string.IsNullOrEmpty(o?.ToString()?.Trim()))
+            if (Conversion.IsBlank(o))
             {
-                if (allowNullable) return true;
-                else return false;
+                return allowNullable;
             }
 
-            try
-            {
-                Convert.ChangeType(o, typeof(T));
-                return true;
-            }
-
-            catch
-            {
-                return false;
-            }
+            return Conversion.TryConvert<T>(o, null, out _);
         }
     }
 }

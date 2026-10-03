@@ -124,7 +124,7 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 ## How values convert
 
-`ToNonNullableType<T>`, `ToNullableType<T>`, `IsParseable<T>` and `ToNonNullableCollectionType` all convert with `Convert.ChangeType(value, typeof(T))`. `T` must be a value type.
+`ToNonNullableType<T>`, `ToNullableType<T>`, `IsParseable<T>` and `ToNonNullableCollectionType` all give the result `Convert.ChangeType(value, typeof(T))` gives. They read text with the target type's own `TryParse`, so text that does not convert costs no exception. `T` must be a value type.
 
 - Text is read in the current culture, so the same string can give different numbers and dates on different machines:
 
@@ -173,7 +173,6 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 - Enums, `Guid`, `TimeSpan`, `DateTimeOffset`, `DateOnly` and other value types that `Convert.ChangeType` does not know never convert: `"Green".ToNonNullableType<Color>()` returns the enum's default, `IsParseable<Color>()` is always `false`, and a collection of names all goes to `TransformationFailures`.
 - There is no way to choose the culture, so text written in a fixed format, such as "1.5" read from a file, gives 15 on a machine set to German.
 - The `InvalidCastException` from `ToNonNullableType<T>(false)` does not carry the exception that caused it, so a value that is out of range cannot be told from one that is not a number.
-- `ToNonNullableCollectionType` converts every element that succeeds twice, and throws and catches an exception for every element that fails. 100,000 strings, half of them not numbers, took 244 ms, against 22 ms when all were numbers.
 - `IEnumerableToDataTable` reads every public property of `T`, so:
   - a type with an indexer throws `TargetParameterCountException`, and `string` has one, so a list of strings cannot be converted;
   - a property with no getter throws `ArgumentException`, and a property whose getter is private is read anyway;

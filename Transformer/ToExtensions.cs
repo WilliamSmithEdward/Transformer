@@ -20,7 +20,7 @@ namespace Transformer
         /// If <c>false</c>, throws an <see cref="InvalidCastException"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The value converted with <see cref="Convert.ChangeType(object, Type)"/>, which reads text in the current culture.
+        /// The value converted as <see cref="Convert.ChangeType(object, Type)"/> converts it, reading text in the current culture.
         /// If <paramref name="returnDefaultOnConversionError"/> is <c>true</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
         /// <exception cref="InvalidCastException">
@@ -28,15 +28,9 @@ namespace Transformer
         /// </exception>
         public static T ToNonNullableType<T>(this object o, bool returnDefaultOnConversionError = true) where T : struct
         {
-            try
-            {
-                return (T)Convert.ChangeType(o, typeof(T));
-            }
-            catch
-            {
-                if (returnDefaultOnConversionError) return default;
-                else throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.");
-            }
+            if (Conversion.TryConvert(o, null, out T value)) return value;
+            if (returnDefaultOnConversionError) return default;
+            throw new InvalidCastException($"Cannot convert value to type {typeof(T)}.");
         }
 
         /// <summary>
@@ -49,7 +43,7 @@ namespace Transformer
         /// If <c>false</c>, returns the default value of type <typeparamref name="T"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The value converted with <see cref="Convert.ChangeType(object, Type)"/>, which reads text in the current culture.
+        /// The value converted as <see cref="Convert.ChangeType(object, Type)"/> converts it, reading text in the current culture.
         /// <c>null</c> for a blank value (<c>null</c>, <see cref="DBNull.Value"/>, or a value whose string form is empty or
         /// only white space), whatever <paramref name="returnNullOnConversionError"/> is.
         /// If <paramref name="returnNullOnConversionError"/> is <c>true</c> and conversion fails, <c>null</c> is returned.
@@ -57,22 +51,10 @@ namespace Transformer
         /// </returns>
         public static T? ToNullableType<T>(this object? o, bool returnNullOnConversionError = true) where T : struct
         {
-            if (string.IsNullOrEmpty(o?.ToString()?.Trim()))
-            {
-                if (returnNullOnConversionError) return null;
-                else return default;
-            }
-
-            try
-            {
-                return (T)Convert.ChangeType(o, typeof(T));
-            }
-
-            catch
-            {
-                if (returnNullOnConversionError) return default;
-                else return default(T);
-            }
+            if (Conversion.IsBlank(o)) return null;
+            if (Conversion.TryConvert(o, null, out T value)) return value;
+            if (returnNullOnConversionError) return null;
+            return default(T);
         }
 
         /// <summary>
