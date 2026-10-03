@@ -132,7 +132,7 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 `ToNonNullableType<T>`, `ToNullableType<T>`, `IsParseable<T>` and `ToNonNullableCollectionType` convert in the same way. `T` must be a value type. For the types `Convert.ChangeType` knows, the numeric types, `bool`, `char` and `DateTime`, they give the result `Convert.ChangeType(value, typeof(T))` gives. They read text with the target type's own `TryParse`, so text that does not convert costs no exception.
 
-- Text is read in the current culture, so the same string can give different numbers and dates on different machines:
+- Text is read in the current culture, so the same string can give different numbers and dates on different machines. Each of the four methods has an overload whose first argument is an `IFormatProvider` that reads text instead: pass `CultureInfo.InvariantCulture` for text written in a fixed format, such as a file or another program's output, or a named culture for text typed in that culture. `null` there means the current culture.
 
   ```csharp
   using System.Globalization;
@@ -145,6 +145,15 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
   CultureInfo.CurrentCulture = new CultureInfo("de-DE");
   Console.WriteLine("1.5".ToNonNullableType<double>());  // 15
   Console.WriteLine("1/2/2023".ToNonNullableType<DateTime>().ToString("yyyy-MM-dd"));  // 2023-02-01
+
+  var invariant = CultureInfo.InvariantCulture;
+  Console.WriteLine("1.5".ToNonNullableType<double>(invariant).ToString(invariant));  // 1.5
+  Console.WriteLine("1.5".IsParseable<decimal>(invariant));                           // True
+  Console.WriteLine("x".ToNullableType<int>(invariant, false));                       // 0
+
+  var list = new List<string> { "1.5", "2.5" };
+  var result = list.ToNonNullableCollectionType<List<string>, string, List<double>, double>(invariant);
+  Console.WriteLine(result.TransformationSuccesses.Sum().ToString(invariant));        // 4
   ```
 
 - Text converts to a whole-number type only when it is a whole number: "1.5" and "1,000" do not convert to `int`. A `double` does convert, rounded to the nearest even number, so 1.5 and 2.5 both give 2.
@@ -177,7 +186,6 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 
 ## Known problems in 1.0.0.5
 
-- There is no way to choose the culture, so text written in a fixed format, such as "1.5" read from a file, gives 15 on a machine set to German.
 - `IEnumerableToDataTable` reads every public property of `T`, so:
   - a type with an indexer throws `TargetParameterCountException`, and `string` has one, so a list of strings cannot be converted;
   - a property with no getter throws `ArgumentException`, and a property whose getter is private is read anyway;
