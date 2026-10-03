@@ -21,6 +21,8 @@
         /// This method filters the elements of the current collection, keeping only those that can be successfully
         /// parsed to the specified non-nullable type <typeparamref name="TNewType"/>. It returns a result object
         /// containing the successfully transformed elements and a list of objects representing transformation failures.
+        /// The failures are the source elements themselves, including empty and white-space strings. A <c>null</c>
+        /// element is in neither list.
         /// </remarks>
         /// <seealso cref="CollectionTransformResult{TCollectionNew, TNewType}"/>
         public static CollectionTransformResult<TCollectionNew, TNewType> ToNonNullableCollectionType<TCollectionCurrent, TCurrentType, TCollectionNew, TNewType>(this TCollectionCurrent collection) 

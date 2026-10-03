@@ -20,7 +20,7 @@ namespace Transformer
         /// If <c>false</c>, throws an <see cref="InvalidCastException"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The converted value of type <typeparamref name="T"/>.
+        /// The value converted with <see cref="Convert.ChangeType(object, Type)"/>, which reads text in the current culture.
         /// If <paramref name="returnDefaultOnConversionError"/> is <c>true</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
         /// <exception cref="InvalidCastException">
@@ -49,7 +49,9 @@ namespace Transformer
         /// If <c>false</c>, returns the default value of type <typeparamref name="T"/> on conversion error.
         /// </param>
         /// <returns>
-        /// The converted nullable value of type <typeparamref name="T"/>.
+        /// The value converted with <see cref="Convert.ChangeType(object, Type)"/>, which reads text in the current culture.
+        /// <c>null</c> for a blank value (<c>null</c>, <see cref="DBNull.Value"/>, or a value whose string form is empty or
+        /// only white space), whatever <paramref name="returnNullOnConversionError"/> is.
         /// If <paramref name="returnNullOnConversionError"/> is <c>true</c> and conversion fails, <c>null</c> is returned.
         /// If <paramref name="returnNullOnConversionError"/> is <c>false</c> and conversion fails, the default value of type <typeparamref name="T"/> is returned.
         /// </returns>
@@ -78,7 +80,11 @@ namespace Transformer
         /// </summary>
         /// <typeparam name="T">The type of elements in the <see cref="IEnumerable{T}"/>.</typeparam>
         /// <param name="list">The <see cref="IEnumerable{T}"/> to convert to a <see cref="DataTable"/>.</param>
-        /// <returns>A <see cref="DataTable"/> representation of the <see cref="IEnumerable{T}"/>.</returns>
+        /// <returns>
+        /// A <see cref="DataTable"/> named after the full name of <typeparamref name="T"/>, with one column for each public
+        /// property of <typeparamref name="T"/> (of the property's type, or its underlying type for a <see cref="Nullable{T}"/>
+        /// property) and one row for each element.
+        /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> is null.</exception>
         public static DataTable IEnumerableToDataTable<T>(this IEnumerable<T> list)
         {
@@ -159,7 +165,10 @@ namespace Transformer
         /// </summary>
         /// <param name="value">The single-precision floating-point number to be rounded.</param>
         /// <param name="digits">The number of fractional digits in the return value.</param>
-        /// <returns>The number nearest to <paramref name="value"/> that contains a number of fractional digits equal to <paramref name="digits"/>.</returns>
+        /// <returns>
+        /// The number nearest to <paramref name="value"/> that contains a number of fractional digits equal to <paramref name="digits"/>;
+        /// a value halfway between two such numbers goes to the even one. The value is rounded as a <see cref="double"/>.
+        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="digits"/> is less than 0 or greater than 15.</exception>
         public static float Round(this float value, int digits) => Math.Round(value, digits).ToNonNullableType<float>();
 
@@ -168,15 +177,18 @@ namespace Transformer
         /// </summary>
         /// <param name="value">The double-precision floating-point number to be rounded.</param>
         /// <param name="digits">The number of fractional digits in the return value.</param>
-        /// <returns>The number nearest to <paramref name="value"/> that contains a number of fractional digits equal to <paramref name="digits"/>.</returns>
+        /// <returns>
+        /// The number nearest to <paramref name="value"/> that contains a number of fractional digits equal to <paramref name="digits"/>;
+        /// a value halfway between two such numbers goes to the even one.
+        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="digits"/> is less than 0 or greater than 15.</exception>
         public static double Round(this double value, int digits) => Math.Round(value, digits);
 
         /// <summary>
-        /// Converts the specified string to title case (each word capitalized).
+        /// Converts the specified string to title case: the whole string lower-cased, then the first letter of each word capitalized.
         /// </summary>
         /// <param name="s">The string to convert to title case.</param>
-        /// <returns>The specified string converted to title case.</returns>
+        /// <returns>The specified string converted to title case. Words in capitals are lower-cased too, so "NASA" becomes "Nasa".</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="s"/> is null.</exception>
         public static string ToTitleCase(this string s) => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
     }
