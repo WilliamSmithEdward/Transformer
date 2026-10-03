@@ -11,11 +11,12 @@
         /// <typeparam name="T">The target value type.</typeparam>
         /// <param name="o">The object to be checked for parseability.</param>
         /// <param name="allowNullable">
-        /// If <c>true</c>, allows nullable types and considers them parseable even if they are null or empty.
-        /// If <c>false</c>, only non-nullable values are considered parseable.
+        /// If <c>true</c>, a blank value (<c>null</c>, <see cref="DBNull.Value"/>, or a value whose string form is empty or
+        /// only white space) counts as parseable. If <c>false</c>, a blank value is not parseable.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value can be parsed to type <typeparamref name="T"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if <see cref="Convert.ChangeType(object, Type)"/> converts the value to type <typeparamref name="T"/>,
+        /// which reads text in the current culture; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsParseable<T>(this object? o, bool allowNullable = false) where T : struct
         {

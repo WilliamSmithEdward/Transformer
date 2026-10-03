@@ -6,17 +6,19 @@
 		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>Transformer is a C# library that helps you better interact with and transform data from one type into another.</Description>
+		<Description>Extension methods that convert values between types: text to numbers, dates and booleans, one value or a whole collection at a time, with a check before converting; a list of objects to a DataTable; and a DataTable to a text table for the console.</Description>
+		<Authors>WilliamSmithE</Authors>
 		<PackageReadmeFile>nugetREADME.md</PackageReadmeFile>
-		<RepositoryUrl></RepositoryUrl>
+		<RepositoryUrl>https://github.com/WilliamSmithEdward/Transformer</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<PackageProjectUrl>https://github.com/WilliamSmithEdward/Transformer</PackageProjectUrl>
-		<PackageTags>data;transformation;generic;type;automation</PackageTags>
+		<PackageTags>convert;conversion;parse;type;extensions;collection;datatable</PackageTags>
 		<Deterministic>false</Deterministic>
 		<AssemblyVersion>1.0.0.5</AssemblyVersion>
 		<PackageVersion>1.0.0.5</PackageVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>Transformer.png</PackageIcon>
-		<Copyright>William Edward Smith, 2024</Copyright>
+		<Copyright>William Smith (WilliamSmithE)</Copyright>
 		<Title>Transformer</Title>
 		<PackageId>WilliamSmithE.Transformer</PackageId>
 	</PropertyGroup>
