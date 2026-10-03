@@ -14,8 +14,8 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageProjectUrl>https://github.com/WilliamSmithEdward/Transformer</PackageProjectUrl>
 		<PackageTags>convert;conversion;parse;type;extensions;collection;datatable</PackageTags>
-		<AssemblyVersion>1.0.0.5</AssemblyVersion>
-		<PackageVersion>1.0.0.5</PackageVersion>
+		<AssemblyVersion>2.0.0</AssemblyVersion>
+		<PackageVersion>2.0.0</PackageVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>Transformer.png</PackageIcon>
 		<Copyright>William Smith (WilliamSmithE)</Copyright>
