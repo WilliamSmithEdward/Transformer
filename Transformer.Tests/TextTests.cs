@@ -37,4 +37,23 @@ public class TextTests
         Assert.Equal("O'neil Mcdonald-Smith", "o'neil mcdonald-smith".ToTitleCase());
         Assert.Equal("", "".ToTitleCase());
     }
+
+    [Theory]
+    [InlineData("tr-TR")]
+    [InlineData("az-Latn-AZ")]
+    [InlineData("de-DE")]
+    public void ToTitleCase_gives_the_same_result_under_any_culture(string culture)
+    {
+        using var scope = new CultureScope(culture);
+
+        Assert.Equal("Title Istanbul", "TITLE ISTANBUL".ToTitleCase());
+        Assert.Equal("Hello Nasa", "hello NASA".ToTitleCase());
+    }
+
+    [Fact]
+    public void ToTitleCase_of_null_throws_ArgumentNullException()
+    {
+        var e = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToTitleCase());
+        Assert.Equal("s", e.ParamName);
+    }
 }

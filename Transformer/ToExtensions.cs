@@ -254,8 +254,18 @@ namespace Transformer
         /// Converts the specified string to title case: the whole string lower-cased, then the first letter of each word capitalized.
         /// </summary>
         /// <param name="s">The string to convert to title case.</param>
-        /// <returns>The specified string converted to title case. Words in capitals are lower-cased too, so "NASA" becomes "Nasa".</returns>
+        /// <returns>
+        /// The specified string converted to title case, the same under every culture, since both steps use the invariant
+        /// culture. Words in capitals are lower-cased too, so "NASA" becomes "Nasa".
+        /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="s"/> is null.</exception>
-        public static string ToTitleCase(this string s) => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
+        public static string ToTitleCase(this string s)
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            // Both steps use the invariant culture, so the result does not depend on the machine's
+            // settings: lower-casing in Turkish would turn "I" into a dotless i.
+            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLowerInvariant());
+        }
     }
 }

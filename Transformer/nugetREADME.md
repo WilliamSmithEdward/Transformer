@@ -183,11 +183,7 @@ Console.WriteLine("hello NASA".ToTitleCase());   // Hello Nasa
 - `Round(digits)` on a `double` is `Math.Round(value, digits)`: a value halfway between two results goes to the even one, so `2.5.Round(0)` is 2 and `3.5.Round(0)` is 4.
 - On a `float` it rounds the value as a `double` and converts back. A `float` holds most decimals inexactly, so `1.005f.Round(2)` is 1, because 1.005f is stored as 1.00499999523.
 - `digits` must be 0 to 15, or `Round` throws `ArgumentOutOfRangeException`.
-- `ToTitleCase()` lower-cases the whole string, then capitalizes the first letter of each word, so acronyms are lower-cased too: "hello NASA" gives "Hello Nasa", and "o'neil mcdonald-smith" gives "O'neil Mcdonald-Smith".
-
-## Known problems in 1.0.0.5
-
-- `ToTitleCase` lower-cases in the current culture, so under Turkish (tr-TR) "TITLE" gives "Title" spelled with a dotless i (U+0131). A `null` string throws `NullReferenceException`, where the XML docs promise `ArgumentNullException`.
+- `ToTitleCase()` lower-cases the whole string, then capitalizes the first letter of each word, so acronyms are lower-cased too: "hello NASA" gives "Hello Nasa", and "o'neil mcdonald-smith" gives "O'neil Mcdonald-Smith". Both steps use the invariant culture, so the result is the same on every machine, Turkish ones included. A `null` string throws `ArgumentNullException`.
 
 ## Attributions
 
