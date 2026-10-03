@@ -78,5 +78,14 @@ and net10.0. What an agent working here must not break:
   Microsoft ends support for net8.0 and net9.0 on 2026-11-10. Change the
   list only on the owner's decision, and update `ci.yml`, `publish.yml`, the
   READMEs and this file with it.
+- **Tests.** `Transformer.Tests` is an xUnit v3 project run by
+  Microsoft.Testing.Platform (`global.json` opts `dotnet test` in), on
+  net8.0, net9.0 and net10.0:
+  `dotnet test --solution Transformer.sln -c Release --fail-skips on`.
+  Conversions read text in the current culture, so a test that depends on
+  one sets it with `CultureScope` (in `TestSupport.cs`), such as de-DE or
+  tr-TR, rather than inheriting the machine's. Nothing touches the network.
+  CI runs them with `--fail-skips on`. A fix comes with a test that fails
+  without it.
 - **XML docs.** CI builds with warnings as errors, so every public member
   needs an XML doc comment.

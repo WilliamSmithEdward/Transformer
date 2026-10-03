@@ -1,7 +1,7 @@
 name: CI
 
 # The library built for every target framework and packed as nuget.org would
-# receive it.
+# receive it, and the tests run on each framework.
 
 on:
   push:
@@ -69,12 +69,45 @@ jobs:
           path: dist/
           if-no-files-found: error
 
+  # The tests, once per target framework. Some set a culture of their own,
+  # such as de-DE or tr-TR, because conversions read text in the current
+  # culture. Nothing reaches the network. --fail-skips turns a skipped test
+  # into a failure.
+  test:
+    name: Test (net8.0, net9.0, net10.0)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The SDK comes from global.json. The .NET 8 and 9 runtimes the tests
+      # run on come from the SDKs named here, exact releases; move them by
+      # hand to the newest 8.0 and 9.0 SDKs that are a week old
+      # (https://dotnet.microsoft.com/download/dotnet).
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: |
+            8.0.425
+            9.0.318
+          global-json-file: global.json
+
+      - name: Restore from the lock file
+        run: dotnet restore Transformer.sln --locked-mode
+
+      - name: Build Release
+        run: dotnet build Transformer.sln --no-restore -c Release
+
+      - name: Run the tests (fails on a skipped test)
+        run: dotnet test --solution Transformer.sln -c Release --no-build --fail-skips on
+
   # The one check the main ruleset requires. It fails unless every job above
   # passed, a skipped one included.
   ci-passed:
     name: CI passed
     if: always()
-    needs: [build]
+    needs: [build, test]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
