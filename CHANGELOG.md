@@ -11,6 +11,12 @@ README carried release notes for them. Versions 1.0.0 to 1.0.0.4 are
 unlisted on nuget.org; 1.0.0.5 is the listed version. All of them target
 net7.0.
 
+## [2.0.1] - 2026-10-04
+
+* The NuGet package now embeds the root GitHub `README.md`, including its badges, as its only README. The OpenSSF Scorecard badge is served through `img.shields.io`, which NuGet supports.
+* CI and Publish verify that the packaged README exactly matches the root file.
+* No library API or runtime behavior changes.
+
 ## [2.0.0] - 2026-10-02
 
 Conversions now reach enums and value types such as `Guid`, `TimeSpan` and `DateOnly`, can read text in a culture the caller chooses, and cost no exception for text that does not convert. `IEnumerableToDataTable` converts any list without throwing, and `ToTitleCase` gives the same result on every machine. Several of the fixes change what callers see, hence the major version.
