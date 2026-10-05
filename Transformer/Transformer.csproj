@@ -9,13 +9,13 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>Extension methods that convert values between types: text to numbers, dates and booleans, one value or a whole collection at a time, with a check before converting; a list of objects to a DataTable; and a DataTable to a text table for the console.</Description>
 		<Authors>WilliamSmithE</Authors>
-		<PackageReadmeFile>nugetREADME.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/WilliamSmithEdward/Transformer</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageProjectUrl>https://github.com/WilliamSmithEdward/Transformer</PackageProjectUrl>
 		<PackageTags>convert;conversion;parse;type;extensions;collection;datatable</PackageTags>
-		<AssemblyVersion>2.0.0</AssemblyVersion>
-		<PackageVersion>2.0.0</PackageVersion>
+		<AssemblyVersion>2.0.1</AssemblyVersion>
+		<PackageVersion>2.0.1</PackageVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>Transformer.png</PackageIcon>
 		<Copyright>William Smith (WilliamSmithE)</Copyright>
@@ -28,7 +28,7 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-		<None Include="nugetREADME.md">
+		<None Include="../README.md">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
