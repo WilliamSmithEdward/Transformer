@@ -1,6 +1,6 @@
 # Dependabot keeps the pinned tools current: the workflows' actions, each
-# pinned to a commit with its release named in a comment, the scanner images,
-# each pinned by digest in a one-line Dockerfile, the pip pins in
+# pinned to a commit with its release named in a comment, the ClamAV image,
+# pinned by digest in a one-line Dockerfile, the pip pins in
 # .github/requirements, which hold the workflow tools, the NuGet packages in
 # the packages.lock.json files, and the SDK in global.json. The YARA-X engine
 # and the YARA Forge rules are release downloads Dependabot cannot follow;
@@ -27,7 +27,6 @@ updates:
 
   - package-ecosystem: docker
     directories:
-      - /.github/security/semgrep
       - /.github/security/clamav
     schedule:
       interval: weekly
